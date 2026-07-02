@@ -9,15 +9,17 @@ const signup = async (req, res) => {
 
     try {
 
-        const { email, password } = req.body;
+        const { username, email, password } = req.body;
 
         const user = await getAuth(app).createUser({
+            username,
             email,
             password
         });
 
         await db.collection("users").doc(user.uid).set({
             uid: user.uid,
+            username: username,
             email: user.email,
             displayName: user.displayName || "",
             emailVerified: user.emailVerified,
@@ -28,6 +30,7 @@ const signup = async (req, res) => {
         res.status(201).json({
             success: true,
             user,
+            username,
             message: "User created successfully",
         });
 
