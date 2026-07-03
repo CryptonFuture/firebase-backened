@@ -23,7 +23,7 @@ const signup = async (req, res) => {
             email: user.email,
             displayName: user.displayName || "",
             emailVerified: user.emailVerified,
-            active: user.disabled,
+            disabled: user.disabled,
             createdAt: new Date(),
         })
 
@@ -97,7 +97,7 @@ const signin = async (req, res) => {
 
     const userData = userDoc.data();
 
-    if (userData.active === false) {
+    if (userData.disabled === false) {
       return res.status(403).json({
         success: false,
         message: "Your account is inactive. Please contact the administrator for approval.",
@@ -113,6 +113,11 @@ const signin = async (req, res) => {
       user: {
         uid: response.data.localId,
         email: response.data.email,
+        username: userData.username,
+        disabled: userData.disabled,
+        emailVerified: userData.emailVerified,
+        createdAt: userData.createdAt
+
       },
     });
   } catch (error) {
@@ -170,10 +175,38 @@ const verifyToken = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split("Bearer ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Token is required",
+      });
+    }
+
+    const decodedToken = await getAuth(app).verifyIdToken(token);
+
+    await getAuth(app).revokeRefreshTokens(decodedToken.uid);
+
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
     signup,
     login,
     forgotPassword,
     verifyToken,
-    signin
+    signin,
+    logout
 }
