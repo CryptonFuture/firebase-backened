@@ -56,6 +56,99 @@ const updateUserStatus = async (req, res) => {
 };
 
 
+const getUsers = async (req, res) => {
+  try {
+    const snapshot = await db.collection("users").get();
+
+    if (snapshot.empty) {
+      return res.status(200).json({
+        success: true,
+        totalUsers: 0,
+        users: [],
+      });
+    }
+
+    const users = [];
+
+    snapshot.forEach((doc) => {
+      users.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    return res.status(200).json({
+      success: true,
+      totalUsers: users.length,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const userRef = db.collection("users").doc(id);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    await userRef.delete();
+
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getSingleUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const doc = await db.collection("users").doc(id).get();
+
+    if (!doc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: doc.id,
+        ...doc.data(),
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
-    updateUserStatus
+    updateUserStatus,
+    getUsers,
+    deleteUser,
+    getSingleUser
 }
