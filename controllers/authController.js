@@ -202,11 +202,37 @@ const logout = async (req, res) => {
   }
 };
 
+const signout = async (req, res) => {
+  try {
+    const { uid } = req.query
+
+    if (!uid) {
+      return res.status(400).json({
+        success: false,
+        message: "UID is required",
+      });
+    }
+
+    await getAuth().revokeRefreshTokens(uid);
+
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
     signup,
     login,
     forgotPassword,
     verifyToken,
     signin,
-    logout
+    logout,
+    signout
 }
