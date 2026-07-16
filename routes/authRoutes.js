@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const { signup, login, forgotPassword, verifyToken, signin, logout, signout } = require("../controllers/authController");
+const { signup, login, forgotPassword, verifyToken, signin, logout, signout, anonymousLogin } = require("../controllers/authController");
 
 const verify = require("../middleware/verifyToken");
 
@@ -11,6 +11,10 @@ router.post("/signup", signup);
 router.post("/login", login);
 
 router.post("/signin", signin);
+
+// router.post("/googleLogin", googleLogin)
+
+router.post("/anonymous-login", anonymousLogin);
 
 router.post("/logout", logout);
 

@@ -9,12 +9,13 @@ const signup = async (req, res) => {
 
     try {
 
-        const { username, email, password } = req.body;
+        const { username, email, password, image } = req.body;
 
         const user = await getAuth(app).createUser({
             username,
             email,
-            password
+            password,
+            photoURL: image || ""
         });
 
         await db.collection("users").doc(user.uid).set({
@@ -22,6 +23,7 @@ const signup = async (req, res) => {
             username: username,
             email: user.email,
             displayName: user.displayName || "",
+            image: image || "",
             emailVerified: user.emailVerified,
             disabled: user.disabled,
             createdAt: new Date(),
@@ -227,6 +229,122 @@ const signout = async (req, res) => {
   }
 };
 
+// const googleLogin = async (req, res) => {
+
+//     try {
+
+//         const { idToken } = req.body;
+
+//         if (!idToken) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "ID Token is required"
+//             });
+//         }
+
+//         const decodedToken = await getAuth().verifyIdToken(idToken);
+
+//         const {
+//             uid,
+//             email,
+//             name,
+//             picture
+//         } = decodedToken;
+
+//         const userRef = db.collection("users").doc(uid);
+
+//         const doc = await userRef.get();
+
+//         if (!doc.exists) {
+
+//             await userRef.set({
+//                 uid,
+//                 username: name || "",
+//                 email,
+//                 image: picture || "",
+//                 provider: "google",
+//                 emailVerified: true,
+//                 createdAt: new Date()
+//             });
+
+//         }
+
+//         const user = (await userRef.get()).data();
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Google Login Successful",
+//             user
+//         });
+
+//     } catch (err) {
+
+//         res.status(401).json({
+//             success: false,
+//             message: err.message
+//         });
+
+//     }
+
+// };
+
+const anonymousLogin = async (req, res) => {
+    try {
+
+        const apiKey = process.env.FIREBASE_API_KEY;
+
+        const response = await axios.post(
+            `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`,
+            {
+                returnSecureToken: true
+            }
+        );
+
+        const { 
+            localId,
+            idToken,
+            refreshToken
+        } = response.data;
+
+        const userRef = db.collection("users").doc(localId);
+
+        const doc = await userRef.get();
+
+        console.log('DOC', doc);
+        
+
+        if (!doc.exists) {
+            const newUserData = {
+                uid: localId,
+                username: "Anonymous User",
+                provider: "anonymous",
+                isAnonymous: true,
+                disabled: true,
+                createdAt: new Date()
+            };
+
+            await userRef.set(newUserData);
+
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Anonymous Login Successful",
+            uid: localId,
+            idToken,
+            refreshToken
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.response?.data || err.message
+        });
+    }
+};
+
+
+
 module.exports = {
     signup,
     login,
@@ -234,5 +352,7 @@ module.exports = {
     verifyToken,
     signin,
     logout,
-    signout
+    signout,
+    anonymousLogin,
+    // googleLogin
 }
