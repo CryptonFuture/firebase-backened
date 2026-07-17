@@ -1,4 +1,5 @@
 const express = require("express");
+const upload = require("../middleware/upload");
 
 const router = express.Router();
 
@@ -6,7 +7,7 @@ const { signup, login, forgotPassword, verifyToken, signin, logout, signout, ano
 
 const verify = require("../middleware/verifyToken");
 
-router.post("/signup", signup);
+router.post("/signup", upload.single("image"), signup);
 
 router.post("/login", login);
 
