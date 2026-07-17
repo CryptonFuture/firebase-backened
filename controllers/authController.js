@@ -2,6 +2,9 @@ const { getAuth } = require("firebase-admin/auth")
 const { getFirestore } = require("firebase-admin/firestore")
 const { app } = require("../config/firebase");
 const axios = require("axios");
+const streamifier = require("streamifier");
+const cloudinary = require("../config/cloudinary");
+const fs = require("fs");
 
 const db = getFirestore(app)
 
@@ -9,13 +12,29 @@ const signup = async (req, res) => {
 
     try {
 
-        const { username, email, password, image } = req.body;
+      const { username, email, password } = req.body;
+
+      let imageUrl = "";
+      let localImage = "";
+
+      if (req.file) {
+        localImage = `/uploads/${req.file.filename}`;
+
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "users",
+        });
+
+        imageUrl = result.secure_url;
+
+        // Agar local file delete karni ho upload ke baad:
+        // fs.unlinkSync(req.file.path);
+      }
 
         const user = await getAuth(app).createUser({
             username,
             email,
             password,
-            photoURL: image || ""
+            photoURL: imageUrl || ""
         });
 
         await db.collection("users").doc(user.uid).set({
@@ -23,7 +42,8 @@ const signup = async (req, res) => {
             username: username,
             email: user.email,
             displayName: user.displayName || "",
-            image: image || "",
+            image: imageUrl || "",
+            localImage,
             emailVerified: user.emailVerified,
             disabled: user.disabled,
             createdAt: new Date(),
@@ -33,6 +53,8 @@ const signup = async (req, res) => {
             success: true,
             user,
             username,
+            image: imageUrl,
+            localImage,
             message: "User created successfully",
         });
 
