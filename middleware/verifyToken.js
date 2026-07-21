@@ -1,4 +1,5 @@
-const { admin } = require("../config/firebase");
+// const { admin } = require("../config/firebase");
+const { getAuth } = require("firebase-admin/auth")
 
 module.exports = async (req, res, next) => {
 
@@ -14,7 +15,7 @@ module.exports = async (req, res, next) => {
 
         }
 
-        const decoded = await admin.auth().verifyIdToken(token);
+        const decoded = await getAuth().verifyIdToken(token);
 
         req.user = decoded;
 

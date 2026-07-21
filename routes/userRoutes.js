@@ -6,13 +6,13 @@ const { updateUserStatus, getUsers, deleteUser, getSingleUser, getActiveUsers, g
 
 const verify = require("../middleware/verifyToken");
 
-router.put("/status/:uid", updateUserStatus);
-router.get("/users", getUsers);
-router.get("/getSingleUser/:id", getSingleUser);
-router.delete("/deleteUsers/:id", deleteUser);
-router.get("/getActiveUsers", getActiveUsers);
-router.get("/getInactiveUsers", getInactiveUsers);
-router.get("/getUsersByStatus", getUsersByStatus)
+router.put("/status/:uid", verify, updateUserStatus);
+router.get("/users", verify, getUsers);
+router.get("/getSingleUser/:id", verify, getSingleUser);
+router.delete("/deleteUsers/:id", verify, deleteUser);
+router.get("/getActiveUsers", verify, getActiveUsers);
+router.get("/getInactiveUsers", verify, getInactiveUsers);
+router.get("/getUsersByStatus", verify, getUsersByStatus)
 
 
 module.exports = router;
