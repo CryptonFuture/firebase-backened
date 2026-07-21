@@ -142,7 +142,9 @@ const signin = async (req, res) => {
         username: userData.username,
         disabled: userData.disabled,
         emailVerified: userData.emailVerified,
-        createdAt: userData.createdAt
+        createdAt: userData.createdAt,
+        image: userData.image,
+        localImage: userData.localImage
 
       },
     });
