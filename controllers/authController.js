@@ -60,6 +60,8 @@ const signup = async (req, res) => {
 
     } catch (err) {
 
+      
+        console.log("Error in signup:", err);
         res.status(500).json({
             success: false,
             message: err.message
