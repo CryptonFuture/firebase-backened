@@ -14,27 +14,29 @@ const signup = async (req, res) => {
 
       const { username, email, password } = req.body;
 
-      let imageUrl = "";
-      let localImage = "";
+      let imageUrls = [];
+      let localImages = [];
 
-      if (req.file) {
-        localImage = `/uploads/${req.file.filename}`;
+      if (req.files && req.files.length > 0) {
+        for (const file of req.files) {
+          localImages.push(`/uploads/${file.filename}`);
 
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          folder: "users",
-        });
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: "users",
+          });
 
-        imageUrl = result.secure_url;
+          imageUrls.push(result.secure_url);
 
-        // Agar local file delete karni ho upload ke baad:
-        // fs.unlinkSync(req.file.path);
-      }
+          // Agar local file delete karni ho upload ke baad:
+          // fs.unlinkSync(req.file.path);
+        }
 
+        }
         const user = await getAuth(app).createUser({
-            username,
             email,
             password,
-            photoURL: imageUrl || ""
+            displayName: username,
+            photoURL: imageUrls.length > 0 ? imageUrls[0] : undefined,
         });
 
         await db.collection("users").doc(user.uid).set({
@@ -42,8 +44,8 @@ const signup = async (req, res) => {
             username: username,
             email: user.email,
             displayName: user.displayName || "",
-            image: imageUrl || "",
-            localImage,
+            image: imageUrls || "",
+            localImages,
             emailVerified: user.emailVerified,
             disabled: user.disabled,
             createdAt: new Date(),
@@ -53,8 +55,8 @@ const signup = async (req, res) => {
             success: true,
             user,
             username,
-            image: imageUrl,
-            localImage,
+            image: imageUrls,
+            localImages,
             message: "User created successfully",
         });
 
