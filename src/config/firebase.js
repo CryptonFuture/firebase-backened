@@ -1,5 +1,5 @@
 const { initializeApp, cert, getApps, getApp } = require("firebase-admin/app");
-const serviceAccount = require("../serviceAccountKey.json")
+const serviceAccount = require("../../serviceAccountKey.json")
 
 // const firebaseConfig = {
 //     apiKey: process.env.FIREBASE_API_KEY,
