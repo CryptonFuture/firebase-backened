@@ -5,6 +5,7 @@ const axios = require("axios");
 const streamifier = require("streamifier");
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
+const redis = require("../config/redis");
 
 const db = getFirestore(app)
 
@@ -51,6 +52,8 @@ const signup = async (req, res) => {
             createdAt: new Date(),
         })
 
+        
+
         res.status(201).json({
             success: true,
             user,
@@ -59,6 +62,16 @@ const signup = async (req, res) => {
             localImages,
             message: "User created successfully",
         });
+
+      await redis.set("users", JSON.stringify(user), {
+        EX: 60
+      });
+
+      return res.json({
+        success: true,
+        source: "MongoDB",
+        data: user
+      });
 
     } catch (err) {
 
