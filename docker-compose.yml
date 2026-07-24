@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis-server
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  firebase-emulator:
+    build: .
+    ports:
+      - "4000:4000"   # Emulator UI
+      - "8080:8080"   # Firestore Emulator
+      - "9099:9099"   # Auth Emulator
+      - "5001:5001"   # Functions Emulator
+    volumes:
+      - .:/app
+    command: firebase emulators:start --project crud-firebase-api
+    environment:
+      - GCP_PROJECT=crud-firebase-api

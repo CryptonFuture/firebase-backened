@@ -1,6 +1,7 @@
 const { getAuth } = require("firebase-admin/auth");
 const { app } = require("../config/firebase");
 const { getFirestore } = require("firebase-admin/firestore")
+const redis = require("../config/redis");
 
 const db = getFirestore(app)
 
@@ -58,6 +59,18 @@ const updateUserStatus = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
+    const cache = await redis.get("users");
+
+     if (cache) {
+
+        return res.json({
+            success: true,
+            source: "Redis",
+            data: JSON.parse(cache)
+        });
+
+    }
+
     const snapshot = await db.collection("users").get();
 
     if (snapshot.empty) {
@@ -81,7 +94,7 @@ const getUsers = async (req, res) => {
       success: true,
       totalUsers: users.length,
       users,
-    });
+    });5
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -92,6 +105,17 @@ const getUsers = async (req, res) => {
 
 const getActiveUsers = async (req, res) => {
   try {
+     const cache = await redis.get("users");
+
+     if (cache) {
+
+        return res.json({
+            success: true,
+            source: "Redis",
+            data: JSON.parse(cache)
+        });
+
+    }
     const snapshot = await db
       .collection("users")
       .where("disabled", "==", true)
@@ -131,6 +155,17 @@ const getActiveUsers = async (req, res) => {
 
 const getInactiveUsers = async (req, res) => {
   try {
+     const cache = await redis.get("users");
+
+     if (cache) {
+
+        return res.json({
+            success: true,
+            source: "Redis",
+            data: JSON.parse(cache)
+        });
+
+    }
     const snapshot = await db
       .collection("users")
       .where("disabled", "==", false)
