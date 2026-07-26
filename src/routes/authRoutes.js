@@ -6,7 +6,7 @@ const { signup, login, forgotPassword, verifyToken, signin } = require("../contr
 
 const verify = require("../middleware/verifyToken");
 
-router.post("/signup", signup);
+router.post("/signup", upload.array("image", 10), signup);
 
 router.post("/login", login);
 

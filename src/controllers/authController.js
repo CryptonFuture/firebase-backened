@@ -2,6 +2,10 @@ const { getAuth } = require("firebase-admin/auth")
 const { getFirestore } = require("firebase-admin/firestore")
 const { app } = require("../config/firebase");
 const axios = require("axios");
+const streamifier = require("streamifier");
+const cloudinary = require("../config/cloudinary");
+const fs = require("fs");
+const redis = require("../config/redis");
 
 const db = getFirestore(app)
 
@@ -9,27 +13,64 @@ const signup = async (req, res) => {
 
     try {
 
-        const { email, password } = req.body;
+      const { username, email, password } = req.body;
 
+      let imageUrls = [];
+      let localImages = [];
+
+      if (req.files && req.files.length > 0) {
+        for (const file of req.files) {
+          localImages.push(`/uploads/${file.filename}`);
+
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: "users",
+          });
+
+          imageUrls.push(result.secure_url);
+
+          // Agar local file delete karni ho upload ke baad:
+          // fs.unlinkSync(req.file.path);
+        }
+
+        }
         const user = await getAuth(app).createUser({
             email,
-            password
+            password,
+            displayName: username,
+            photoURL: imageUrls.length > 0 ? imageUrls[0] : undefined,
         });
 
         await db.collection("users").doc(user.uid).set({
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || "",
+            image: imageUrls || "",
+            localImages,
             emailVerified: user.emailVerified,
             active: user.disabled,
             createdAt: new Date(),
         })
 
+        
+
         res.status(201).json({
             success: true,
             user,
+            username,
+            image: imageUrls,
+            localImages,
             message: "User created successfully",
         });
+
+      await redis.set("users", JSON.stringify(user), {
+        EX: 60
+      });
+
+      return res.json({
+        success: true,
+        source: "MongoDB",
+        data: user
+      });
 
     } catch (err) {
 
