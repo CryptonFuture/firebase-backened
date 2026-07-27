@@ -17,7 +17,22 @@ app.use("/api/auth", require("./src/routes/authRoutes"));
 app.use("/api/user", require("./src/routes/userRoutes"));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const PORT = process.env.PORT || 5000;
+const ports = {
+  development: process.env.PORT_DEVELOPMENT,
+  staging: process.env.PORT_STAGING,
+  production: process.env.PORT_PRODUCTION
+};
+
+const NODE_ENV = process.env.NODE_ENV || "development";
+
+const PORT = ports[NODE_ENV];
+
+app.get("/", (req, res) => {
+  res.json({
+    environment: process.env.NODE_ENV,
+    port: PORT,
+  });
+});
 
 const startServer = async () => {
     try {
