@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require('path')
 
 const express = require("express");
 
@@ -24,7 +25,7 @@ const startServer = async () => {
 
         console.log("✅ Redis Connected");
 
-        app.listen(PORT, () => {
+        app.listen(PORT, "0.0.0.0", () => {
             console.log(`🚀 Server running on port ${PORT}`);
         });
 

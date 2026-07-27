@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    match /{tasks}/{taskId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    match /students/{docId} {
+    	allow create: if request.auth != null
+      && !exists(/database/$(database)/documents/students/$(request.auth.uid));
+      
+      allow read: if request.auth != null
+      
+      allow delete: if request.auth != null
+    }
+  }
+}
