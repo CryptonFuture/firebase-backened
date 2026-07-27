@@ -8,13 +8,44 @@ services:
     ports:
       - "6379:6379"
 
+  api:
+    build: .
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379
+
+  development:
+    build: .
+    environment:
+      NODE_ENV: development
+      PORT_DEVELOPMENT: 8080
+    ports:
+      - "8080:8080"
+
+  staging:
+    build: .
+    environment:
+      NODE_ENV: staging
+      PORT_STAGING: 5000
+    ports:
+      - "5000:5000"
+
+  production:
+    build: .
+    environment:
+      NODE_ENV: production
+      PORT_PRODUCTION: 9099
+    ports:
+      - "9099:9099"
+
   firebase-emulator:
     build: .
-    ports:
-      - "5000:5000"   # Emulator UI
-      - "8080:8080"   # Firestore Emulator
-      - "9099:9099"   # Auth Emulator
-      - "5001:5001"   # Functions Emulator
+    # ports:
+    #   - "5000:5000"   # Emulator UI
+    #   - "8080:8080"   # Firestore Emulator
+    #   - "9099:9099"   # Auth Emulator
+    #   - "5001:5001"   # Functions Emulator
     volumes:
       - .:/app
     command: firebase emulators:start --project crud-firebase-api

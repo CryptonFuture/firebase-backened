@@ -15,7 +15,11 @@ COPY . .
 
 WORKDIR /usr/src/app
 
+ARG NODE_ENV=development
+
+ENV NODE_ENV=$NODE_ENV
+
 # Emulators ki ports expose karen
 EXPOSE 5000 8080 9099 5001
 
-CMD ["firebase", "emulators:start", "--project", "crud-firebase-api", "--host", "0.0.0.0"]
+CMD ["npm", "start", "firebase", "emulators:start", "--project", "crud-firebase-api", "--host", "0.0.0.0"]

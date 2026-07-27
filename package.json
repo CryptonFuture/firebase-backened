@@ -4,8 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "node app.js",
+    "dev": "concurrently \"cross-env NODE_ENV=development node app.js\" \"firebase emulators:start --project crud-firebase-api --host 0.0.0.0\"",
+    "staging": "concurrently \"cross-env NODE_ENV=staging node app.js\" \"firebase emulators:start --project crud-firebase-api --host 0.0.0.0\"",
+    "production": "concurrently \"cross-env NODE_ENV=production node app.js\" \"firebase emulators:start --project crud-firebase-api --host 0.0.0.0\""
   },
   "keywords": [],
   "author": "",
