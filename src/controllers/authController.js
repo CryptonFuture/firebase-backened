@@ -11,101 +11,102 @@ const db = getFirestore(app)
 
 const signup = async (req, res) => {
 
-    try {
+  try {
 
-      const { username, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-      let imageUrls = [];
-      let localImages = [];
+    let imageUrls = [];
+    let localImages = [];
 
-      if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          localImages.push(`/uploads/${file.filename}`);
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        localImages.push(`/uploads/${file.filename}`);
 
-          const result = await cloudinary.uploader.upload(file.path, {
-            folder: "users",
-          });
-
-          imageUrls.push(result.secure_url);
-
-          // Agar local file delete karni ho upload ke baad:
-          // fs.unlinkSync(req.file.path);
-        }
-
-        }
-        const user = await getAuth(app).createUser({
-            email,
-            password,
-            displayName: username,
-            photoURL: imageUrls.length > 0 ? imageUrls[0] : undefined,
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: "users",
         });
 
-        await db.collection("users").doc(user.uid).set({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || "",
-            image: imageUrls || "",
-            localImages,
-            emailVerified: user.emailVerified,
-            active: user.disabled,
-            createdAt: new Date(),
-        })
+        imageUrls.push(result.secure_url);
 
-        
-
-        res.status(201).json({
-            success: true,
-            user,
-            username,
-            image: imageUrls,
-            localImages,
-            message: "User created successfully",
-        });
-
-      await redis.set("users", JSON.stringify(user), {
-        EX: 60
-      });
-
-      return res.json({
-        success: true,
-        source: "MongoDB",
-        data: user
-      });
-
-    } catch (err) {
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
+        // Agar local file delete karni ho upload ke baad:
+        // fs.unlinkSync(req.file.path);
+      }
 
     }
+    const user = await getAuth(app).createUser({
+      email,
+      password,
+      displayName: username,
+      photoURL: imageUrls.length > 0 ? imageUrls[0] : undefined,
+    });
+
+    const userData = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || "",
+      image: imageUrls,
+      localImages,
+      emailVerified: user.emailVerified,
+      active: user.disabled,
+      createdAt: new Date(),
+    };
+
+    // Save in Firestore
+    await db.collection("users").doc(user.uid).set(userData);
+
+    await redis.set(
+      `user:${user.uid}`,
+      JSON.stringify(userData),
+      {
+        EX: 3600,
+      }
+    );
+
+    return res.status(201).json({
+      success: true,
+      user,
+      username,
+      image: imageUrls,
+      localImages,
+      message: "User created successfully",
+    });
+
+
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+
+  }
 
 };
 
 const login = async (req, res) => {
 
-     const { uid } = req.body;
+  const { uid } = req.body;
 
-    try {
+  try {
 
-        const decoded = await getAuth(app).createCustomToken(uid);
+    const decoded = await getAuth(app).createCustomToken(uid);
 
-        res.json({
-            success: true,
-            user: decoded
-        });
+    return res.json({
+      success: true,
+      user: decoded
+    });
 
-    }
+  }
 
-    catch (err) {
+  catch (err) {
 
-        res.status(401).json({
-            success: false,
-            message: err.message
-        });
+    return res.status(401).json({
+      success: false,
+      message: err.message
+    });
 
-    }
+  }
 
 }
 
@@ -142,7 +143,7 @@ const signin = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Login successful",
       token: response.data.idToken,
@@ -154,7 +155,7 @@ const signin = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       message:
         error.response?.data?.error?.message || error.message,
@@ -164,31 +165,53 @@ const signin = async (req, res) => {
 
 const forgotPassword = async (req, res) => {
 
-    try {
+  try {
 
-        const { email } = req.body;
+    const { email } = req.body;
 
-        const link = await getAuth(app).generatePasswordResetLink(email);
+    const link = await getAuth(app).generatePasswordResetLink(email);
 
-        res.json({
-            success: true,
-            resetLink: link
-        });
+    return res.json({
+      success: true,
+      resetLink: link
+    });
 
-    }
+  }
 
-    catch (err) {
+  catch (err) {
 
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
 
-    }
-
-    
-
+  }
 }
+
+const signout = async (req, res) => {
+  try {
+    const { uid } = req.query
+
+    if (!uid) {
+      return res.status(400).json({
+        success: false,
+        message: "UID is required",
+      });
+    }
+
+    await getAuth().revokeRefreshTokens(uid);
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 const verifyToken = async (req, res) => {
   try {
@@ -196,12 +219,12 @@ const verifyToken = async (req, res) => {
 
     const decoded = await getAuth(app).verifyIdToken(token);
 
-    res.json({
+    return res.json({
       success: true,
       user: decoded,
     });
   } catch (error) {
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       message: "Invalid Token",
     });
@@ -209,9 +232,10 @@ const verifyToken = async (req, res) => {
 };
 
 module.exports = {
-    signup,
-    login,
-    forgotPassword,
-    verifyToken,
-    signin
+  signup,
+  login,
+  forgotPassword,
+  verifyToken,
+  signin,
+  signout
 }
