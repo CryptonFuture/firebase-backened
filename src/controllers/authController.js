@@ -13,7 +13,7 @@ const signup = async (req, res) => {
 
   try {
 
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
     let imageUrls = [];
     let localImages = [];
@@ -45,6 +45,8 @@ const signup = async (req, res) => {
       email: user.email,
       displayName: user.displayName || "",
       image: imageUrls,
+      role,
+      is_admin: role === "admin" ? 1 : 0,
       localImages,
       emailVerified: user.emailVerified,
       active: user.disabled,
@@ -66,6 +68,8 @@ const signup = async (req, res) => {
       success: true,
       user,
       username,
+      role,
+      is_admin: userData.is_admin,
       image: imageUrls,
       localImages,
       message: "User created successfully",
@@ -143,16 +147,37 @@ const signin = async (req, res) => {
       });
     }
 
+    if (!userData.role) {
+      return res.status(403).json({
+        success: false,
+        message: "Role is not assigned. Please contact the administrator.",
+      });
+    }
+
+    // Check is_admin
+    if (userData.is_admin !== 0 && userData.is_admin !== 1) {
+      return res.status(403).json({
+        success: false,
+        message: "Invalid admin status. Please contact the administrator.",
+      });
+    }
+    
     return res.status(200).json({
       success: true,
-      message: "Login successful",
+      message:
+        userData.role === "admin" && userData.is_admin === 1
+          ? "Admin login successful."
+          : "User login successful.",
       token: response.data.idToken,
       refreshToken: response.data.refreshToken,
       expiresIn: response.data.expiresIn,
+      role: userData.role,
+      is_admin: userData.is_admin,
       user: {
         uid: response.data.localId,
         email: response.data.email,
       },
+      
     });
   } catch (error) {
     return res.status(401).json({
