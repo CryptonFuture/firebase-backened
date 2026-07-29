@@ -7,17 +7,17 @@ const db = getFirestore(app)
 
 const getRoles = async (req, res) => {
   try {
-    // const cache = await redis.get("roles");
+    const cache = await redis.get("roles");
 
-    //  if (cache) {
+     if (cache) {
 
-    //     return res.json({
-    //         success: true,
-    //         source: "Redis",
-    //         data: JSON.parse(cache)
-    //     });
+        return res.json({
+            success: true,
+            source: "Redis",
+            data: JSON.parse(cache)
+        });
 
-    // }
+    }
 
     const snapshot = await db.collection("roles").get();
 
