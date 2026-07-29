@@ -37,7 +37,7 @@ jobs:
         run: docker images
 
       - name: Stop Existing Container
-        run: docker compose down || true
+        run: docker compose down
         
       - name: Remove Old Images
         run: docker image prune -af
