@@ -48,6 +48,7 @@ services:
     #   - "5001:5001"   # Functions Emulator
     volumes:
       - .:/app
+      - /app/node_modules
     command: firebase emulators:start --project crud-firebase-api
     environment:
       - GCP_PROJECT=crud-firebase-api

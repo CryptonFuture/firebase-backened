@@ -13,6 +13,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
+        with:
+          node-version: 22
+
+      - name: Install Packages
+        run: npm install
+
+      - name: Run Tests
+        run: npm test --if-present
+
+      - name: Build Docker Image
+        run: docker build -t node-firebase-api .
+
+      - name: Verify Image
+        run: docker images
+
       - name: Stop Existing Container
         run: docker compose down || true
         
