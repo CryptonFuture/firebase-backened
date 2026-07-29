@@ -20,12 +20,12 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
 
+        with:
+          node-version: 22
+
       - name: Install Dependencies
         shell: powershell -ExecutionPolicy Bypass -Command ". '{0}'"
         run: npm install
-
-        with:
-          node-version: 22
 
       - name: Install Packages
         run: npm install
