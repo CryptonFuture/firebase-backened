@@ -1,8 +1,9 @@
 const redis = require("../config/redis");
+const { app } = require("../config/firebase");
+
 const { getFirestore } = require("firebase-admin/firestore")
 
 const db = getFirestore(app)
-
 
 const getRoles = async (req, res) => {
   try {
