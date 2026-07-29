@@ -8,7 +8,11 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-    
+
+    defaults:
+      run:
+        shell: powershell -ExecutionPolicy Bypass -Command "Set-Variable -Name '[System.Management.Automation.CommandCompletion]' -Value $null; . '{0}'"
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -19,9 +23,6 @@ jobs:
       - name: Install Dependencies
         shell: powershell -ExecutionPolicy Bypass -Command ". '{0}'"
         run: npm install
-
-        with:
-          node-version: 22
 
       - name: Install Packages
         run: npm install
