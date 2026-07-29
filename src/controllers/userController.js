@@ -118,7 +118,7 @@ const getActiveUsers = async (req, res) => {
     }
     const snapshot = await db
       .collection("users")
-      .where("disabled", "==", true)
+      .where("active", "==", true)
       .get();
 
     if (snapshot.empty) {
@@ -168,7 +168,7 @@ const getInactiveUsers = async (req, res) => {
     }
     const snapshot = await db
       .collection("users")
-      .where("disabled", "==", false)
+      .where("active", "==", false)
       .get();
 
     if (snapshot.empty) {
@@ -301,6 +301,104 @@ const getSingleUser = async (req, res) => {
   }
 };
 
+const editUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const doc = await db.collection("users").doc(id).get();
+
+    if (!doc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: doc.id,
+        ...doc.data(),
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const { username, email, active } = req.body;
+
+    const auth = getAuth();
+
+    const updateAuthData = {};
+
+    if (username !== undefined) {
+      updateAuthData.username = username;
+    }
+
+    if (email !== undefined) {
+      updateAuthData.email = email;
+    }
+
+    if (active !== undefined) {
+    
+      updateAuthData.disabled = !active;
+    }
+
+    await auth.updateUser(uid, updateAuthData);
+
+    const updateFirestoreData = {};
+
+    if (username !== undefined) {
+      updateFirestoreData.username = username;
+    }
+
+    if (email !== undefined) {
+      updateFirestoreData.email = email;
+    }
+
+    if (active !== undefined) {
+      updateFirestoreData.active = active;
+    }
+
+    updateFirestoreData.updatedAt = new Date();
+
+    await db.collection("users").doc(uid).update(updateFirestoreData);
+
+    const updatedDoc = await db.collection("users").doc(uid).get();
+
+    const userData = updatedDoc.data();
+
+    await redis.set(
+      `user:${uid}`,
+      JSON.stringify(userData),
+      {
+        EX: 3600,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: userData,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+
 module.exports = {
     updateUserStatus,
     getUsers,
@@ -308,5 +406,7 @@ module.exports = {
     getSingleUser,
     getActiveUsers,
     getInactiveUsers,
-    getUsersByStatus
+    getUsersByStatus,
+    editUser,
+    updateUser
 }
