@@ -171,11 +171,13 @@ const signin = async (req, res) => {
       token: response.data.idToken,
       refreshToken: response.data.refreshToken,
       expiresIn: response.data.expiresIn,
-      role: userData.role,
-      is_admin: userData.is_admin,
+     
       user: {
         uid: response.data.localId,
         email: response.data.email,
+        role: userData.role,
+        is_admin: userData.is_admin,
+        displayName: userData.displayName
       },
       
     });
