@@ -19,6 +19,6 @@ router.post("/forgot-password", forgotPassword);
 
 router.get("/verify-token", verifyToken);
 
-router.get("/me", verify, auth.currentUser);
+// router.get("/me", verify, auth.currentUser);
 
 module.exports = router;
