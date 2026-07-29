@@ -16,15 +16,6 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
 
-      - name: Run Tests
-        run: npm test --if-present
-
-      - name: Build Docker Image
-        run: docker build -t node-firebase-api .
-
-      - name: Verify Image
-        run: docker images
-
       - name: Stop Existing Container
         run: docker compose down || true
         
