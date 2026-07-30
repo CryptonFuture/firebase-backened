@@ -20,6 +20,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
 
+      - name: Create Firebase Service Account
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > serviceAccountKey.json
+
       - name: Install Dependencies
         shell: powershell -ExecutionPolicy Bypass -Command ". '{0}'"
         run: npm install
