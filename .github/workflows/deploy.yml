@@ -24,10 +24,10 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > serviceAccountKey.json
 
-      - name: Verify Firebase JSON
+      - name: Validate Firebase JSON
         shell: powershell
         run: |
-          Get-Content serviceAccountKey.json -TotalCount 20
+          powershell -ExecutionPolicy Bypass -Command "Get-Content serviceAccountKey.json"
 
       - name: Install Dependencies
         shell: powershell -ExecutionPolicy Bypass -Command ". '{0}'"
