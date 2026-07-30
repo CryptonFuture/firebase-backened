@@ -24,6 +24,9 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > serviceAccountKey.json
 
+      - name: Verify JSON
+        run: cat serviceAccountKey.json | head -20
+
       - name: Install Dependencies
         shell: powershell -ExecutionPolicy Bypass -Command ". '{0}'"
         run: npm install
