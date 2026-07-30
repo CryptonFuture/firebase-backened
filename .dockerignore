@@ -1,3 +1,6 @@
-serviceAccountKey.json
+/node_modules
+.env
+.git
+.gitignore
 docker-compose.yml
 Dockerfile
