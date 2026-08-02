@@ -10,7 +10,7 @@ router.put("/status/:uid", verify, updateUserStatus);
 router.get("/users", verify, getUsers);
 router.get("/getSingleUser/:id", verify, getSingleUser);
 router.get("/editUser/:id", verify, editUser);
-router.put("/updateUser/:id", verify, updateUser);
+router.put("/updateUser/:uid", verify, updateUser);
 router.delete("/deleteUsers/:id", verify, deleteUser);
 router.get("/getActiveUsers", verify, getActiveUsers);
 router.get("/getInactiveUsers", verify, getInactiveUsers);
