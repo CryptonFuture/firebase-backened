@@ -5,7 +5,7 @@ const axios = require("axios");
 const streamifier = require("streamifier");
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
-const redis = require("../config/redis");
+// const redis = require("../config/redis");
 
 const db = getFirestore(app)
 
@@ -56,13 +56,13 @@ const signup = async (req, res) => {
     // Save in Firestore
     await db.collection("users").doc(user.uid).set(userData);
 
-    await redis.set(
-      `user:${user.uid}`,
-      JSON.stringify(userData),
-      {
-        EX: 3600,
-      }
-    );
+    // await redis.set(
+    //   `user:${user.uid}`,
+    //   JSON.stringify(userData),
+    //   {
+    //     EX: 3600,
+    //   }
+    // );
 
     return res.status(201).json({
       success: true,

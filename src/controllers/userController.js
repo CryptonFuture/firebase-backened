@@ -1,7 +1,7 @@
 const { getAuth } = require("firebase-admin/auth");
 const { app } = require("../config/firebase");
 const { getFirestore } = require("firebase-admin/firestore")
-const redis = require("../config/redis");
+// const redis = require("../config/redis");
 
 const db = getFirestore(app)
 
@@ -59,17 +59,17 @@ const updateUserStatus = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const cache = await redis.get("users");
+    // const cache = await redis.get("users");
 
-     if (cache) {
+    //  if (cache) {
 
-        return res.json({
-            success: true,
-            source: "Redis",
-            data: JSON.parse(cache)
-        });
+    //     return res.json({
+    //         success: true,
+    //         source: "Redis",
+    //         data: JSON.parse(cache)
+    //     });
 
-    }
+    // }
 
     const snapshot = await db.collection("users").get();
 
@@ -105,17 +105,17 @@ const getUsers = async (req, res) => {
 
 const getActiveUsers = async (req, res) => {
   try {
-     const cache = await redis.get("users");
+    //  const cache = await redis.get("users");
 
-     if (cache) {
+    //  if (cache) {
 
-        return res.json({
-            success: true,
-            source: "Redis",
-            data: JSON.parse(cache)
-        });
+    //     return res.json({
+    //         success: true,
+    //         source: "Redis",
+    //         data: JSON.parse(cache)
+    //     });
 
-    }
+    // }
     const snapshot = await db
       .collection("users")
       .where("active", "==", true)
@@ -155,17 +155,17 @@ const getActiveUsers = async (req, res) => {
 
 const getInactiveUsers = async (req, res) => {
   try {
-     const cache = await redis.get("users");
+    //  const cache = await redis.get("users");
 
-     if (cache) {
+    //  if (cache) {
 
-        return res.json({
-            success: true,
-            source: "Redis",
-            data: JSON.parse(cache)
-        });
+    //     return res.json({
+    //         success: true,
+    //         source: "Redis",
+    //         data: JSON.parse(cache)
+    //     });
 
-    }
+    // }
     const snapshot = await db
       .collection("users")
       .where("active", "==", false)
@@ -332,7 +332,7 @@ const editUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { uid } = req.params;
-    const { username, email, active } = req.body;
+    const { username, email, active, role, is_admin } = req.body;
 
     const auth = getAuth();
 
@@ -344,6 +344,14 @@ const updateUser = async (req, res) => {
 
     if (email !== undefined) {
       updateAuthData.email = email;
+    }
+
+    if (role !== undefined) {
+      updateAuthData.role = role;
+    }
+
+    if (is_admin !== undefined) {
+      updateAuthData.is_admin = !is_admin;
     }
 
     if (active !== undefined) {
@@ -363,6 +371,15 @@ const updateUser = async (req, res) => {
       updateFirestoreData.email = email;
     }
 
+     if (role !== undefined) {
+      updateFirestoreData.role = role;
+    }
+
+    if (is_admin !== undefined) {
+      updateFirestoreData.is_admin = is_admin;
+    }
+
+
     if (active !== undefined) {
       updateFirestoreData.active = active;
     }
@@ -375,13 +392,13 @@ const updateUser = async (req, res) => {
 
     const userData = updatedDoc.data();
 
-    await redis.set(
-      `user:${uid}`,
-      JSON.stringify(userData),
-      {
-        EX: 3600,
-      }
-    );
+    // await redis.set(
+    //   `user:${uid}`,
+    //   JSON.stringify(userData),
+    //   {
+    //     EX: 3600,
+    //   }
+    // );
 
     return res.status(200).json({
       success: true,
@@ -390,7 +407,8 @@ const updateUser = async (req, res) => {
     });
 
   } catch (error) {
-
+    console.log(error);
+    
     return res.status(500).json({
       success: false,
       message: error.message,
