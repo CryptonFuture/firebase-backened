@@ -9,7 +9,7 @@ const fs = require("fs");
 
 const db = getFirestore(app)
 
-const signup = async (req, res) => {
+exports.signup = async (req, res) => {
 
   try {
 
@@ -95,7 +95,7 @@ const signup = async (req, res) => {
 
 };
 
-const login = async (req, res) => {
+exports.login = async (req, res) => {
 
   const { uid } = req.body;
 
@@ -121,7 +121,7 @@ const login = async (req, res) => {
 
 }
 
-const signin = async (req, res) => {
+exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -197,7 +197,7 @@ const signin = async (req, res) => {
   }
 };
 
-const forgotPassword = async (req, res) => {
+exports.forgotPassword = async (req, res) => {
 
   try {
 
@@ -222,7 +222,7 @@ const forgotPassword = async (req, res) => {
   }
 }
 
-const signout = async (req, res) => {
+exports.signout = async (req, res) => {
   try {
     const { uid } = req.query
 
@@ -247,7 +247,7 @@ const signout = async (req, res) => {
   }
 };
 
-const verifyToken = async (req, res) => {
+exports.verifyToken = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
 
@@ -264,12 +264,3 @@ const verifyToken = async (req, res) => {
     });
   }
 };
-
-module.exports = {
-  signup,
-  login,
-  forgotPassword,
-  verifyToken,
-  signin,
-  signout
-}
