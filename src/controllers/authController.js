@@ -41,6 +41,7 @@ exports.signup = async (req, res) => {
     });
 
     const userData = {
+      username: username,
       uid: user.uid,
       email: user.email,
       displayName: user.displayName || "",
