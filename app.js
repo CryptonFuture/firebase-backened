@@ -55,17 +55,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // startServer();
 
-<<<<<<< Updated upstream
 const port = process.env.PORT
 
 app.listen(port, () => {
 
     console.log(`Server running on ${port}`);
 
-=======
-app.listen(PORT, () => {
-
-    console.log(`Server running on ${PORT}`);
-
->>>>>>> Stashed changes
 });
