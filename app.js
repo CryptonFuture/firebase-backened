@@ -16,6 +16,8 @@ app.use(express.json());
 app.use("/api/auth", require("./src/routes/authRoutes"));
 app.use("/api/user", require("./src/routes/userRoutes"));
 app.use("/api/role", require("./src/routes/roleRoutes"));
+app.use("/api/ai", require("./src/routes/aiRoutes"));
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const ports = {

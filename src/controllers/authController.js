@@ -46,7 +46,14 @@ const signup = async (req, res) => {
       displayName: user.displayName || "",
       image: imageUrls,
       role,
-      is_admin: role === "admin" ? 1 : 0,
+      is_admin:
+        role === "admin"
+          ? 1
+          : role === "superadmin"
+            ? 2
+            : role === "subadmin"
+              ? 3
+              : 0,
       localImages,
       emailVerified: user.emailVerified,
       active: user.disabled,
