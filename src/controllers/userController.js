@@ -94,7 +94,7 @@ const getUsers = async (req, res) => {
       success: true,
       totalUsers: users.length,
       users,
-    });5
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

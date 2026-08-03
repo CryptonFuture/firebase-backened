@@ -4,8 +4,8 @@ const router = express.Router();
 
 const { getRoles } = require("../../src/controllers/roleController");
 
-const verify = require("../../src/middleware/verifyToken");
+// const verify = require("../../src/middleware/verifyToken");
 
-router.get("/roles", verify, getRoles);
+router.get("/roles", getRoles);
 
 module.exports = router;
