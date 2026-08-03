@@ -3,21 +3,21 @@ const upload = require('../middleware/upload')
 
 const router = express.Router();
 
-const { signup, login, forgotPassword, verifyToken, signin, signout } = require("../../src/controllers/authController");
+const authController = require("../controllers/authController");
 
 const verify = require("../middleware/verifyToken");
 
-router.post("/signup", upload.array("image", 10), signup);
+router.post("/signup", upload.array("image", 10), authController.signup);
 
-router.post("/login", login);
+router.post("/login", authController.login);
 
-router.post("/signin", signin);
+router.post("/signin", authController.signin);
 
-router.post("/signout", signout);
+router.post("/signout", authController.signout);
 
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", authController.forgotPassword);
 
-router.get("/verify-token", verifyToken);
+router.get("/verify-token", authController.verifyToken);
 
 // router.get("/me", verify, auth.currentUser);
 

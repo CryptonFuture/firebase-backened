@@ -2,19 +2,19 @@ const express = require("express");
 
 const router = express.Router();
 
-const { updateUserStatus, getUsers, editUser, updateUser, deleteUser, getSingleUser, getActiveUsers, getInactiveUsers, getUsersByStatus } = require("../../src/controllers/userController");
+const userController = require("../controllers/userController");
 
-const verify = require("../../src/middleware/verifyToken");
+const verify = require("../middleware/verifyToken");
 
-router.put("/status/:uid", verify, updateUserStatus);
-router.get("/users", verify, getUsers);
-router.get("/getSingleUser/:id", verify, getSingleUser);
-router.get("/editUser/:id", verify, editUser);
-router.put("/updateUser/:uid", verify, updateUser);
-router.delete("/deleteUsers/:id", verify, deleteUser);
-router.get("/getActiveUsers", verify, getActiveUsers);
-router.get("/getInactiveUsers", verify, getInactiveUsers);
-router.get("/getUsersByStatus", verify, getUsersByStatus)
+router.put("/status/:uid", verify, userController.updateUserStatus);
+router.get("/users", verify, userController.getUsers);
+router.get("/getSingleUser/:id", verify, userController.getSingleUser);
+router.get("/editUser/:id", verify, userController.editUser);
+router.put("/updateUser/:uid", verify, userController.updateUser);
+router.delete("/deleteUsers/:id", verify, userController.deleteUser);
+router.get("/getActiveUsers", verify, userController.getActiveUsers);
+router.get("/getInactiveUsers", verify, userController.getInactiveUsers);
+router.get("/getUsersByStatus", verify, userController.getUsersByStatus)
 
 
 module.exports = router;

@@ -5,7 +5,7 @@ const { getFirestore } = require("firebase-admin/firestore")
 
 const db = getFirestore(app)
 
-const getRoles = async (req, res) => {
+exports.getRoles = async (req, res) => {
   try {
     // const cache = await redis.get("roles");
 
@@ -51,6 +51,3 @@ const getRoles = async (req, res) => {
   }
 };
 
-module.exports = {
-    getRoles
-}

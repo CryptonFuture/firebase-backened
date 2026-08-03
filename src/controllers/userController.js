@@ -5,7 +5,7 @@ const { getFirestore } = require("firebase-admin/firestore")
 
 const db = getFirestore(app)
 
-const updateUserStatus = async (req, res) => {
+exports.updateUserStatus = async (req, res) => {
   try {
     const { uid } = req.params;
     const { disabled } = req.body;
@@ -57,7 +57,7 @@ const updateUserStatus = async (req, res) => {
 };
 
 
-const getUsers = async (req, res) => {
+exports.getUsers = async (req, res) => {
   try {
     // const cache = await redis.get("users");
 
@@ -103,7 +103,7 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getActiveUsers = async (req, res) => {
+exports.getActiveUsers = async (req, res) => {
   try {
     //  const cache = await redis.get("users");
 
@@ -153,7 +153,7 @@ const getActiveUsers = async (req, res) => {
   }
 };
 
-const getInactiveUsers = async (req, res) => {
+exports.getInactiveUsers = async (req, res) => {
   try {
     //  const cache = await redis.get("users");
 
@@ -201,7 +201,7 @@ const getInactiveUsers = async (req, res) => {
   }
 };
 
-const getUsersByStatus = async (req, res) => {
+exports.getUsersByStatus = async (req, res) => {
   try {
     const { disabled } = req.query;
 
@@ -245,7 +245,7 @@ const getUsersByStatus = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -273,7 +273,7 @@ const deleteUser = async (req, res) => {
   }
 };
 
-const getSingleUser = async (req, res) => {
+exports.getSingleUser = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -301,7 +301,7 @@ const getSingleUser = async (req, res) => {
   }
 };
 
-const editUser = async (req, res) => {
+exports.editUser = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -329,7 +329,7 @@ const editUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+exports.updateUser = async (req, res) => {
   try {
     const { uid } = req.params;
     const { username, email, active, role, is_admin } = req.body;
@@ -417,14 +417,3 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = {
-    updateUserStatus,
-    getUsers,
-    deleteUser,
-    getSingleUser,
-    getActiveUsers,
-    getInactiveUsers,
-    getUsersByStatus,
-    editUser,
-    updateUser
-}

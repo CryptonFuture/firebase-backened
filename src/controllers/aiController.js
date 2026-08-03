@@ -3,7 +3,7 @@ const geni = require("../config/geni");
 
 const { db } = require("../config/firebase");
 
-const askAI = async (req, res) => {
+exports.askAI = async (req, res) => {
     try {
         const { prompt } = req.body;
 
@@ -36,7 +36,7 @@ const askAI = async (req, res) => {
 
 }
 
-const geniChat = async (req, res) => {
+exports.geniChat = async (req, res) => {
 
     try {
 
@@ -71,8 +71,3 @@ const geniChat = async (req, res) => {
     }
 
 };
-
-module.exports = {
-    askAI,
-    geniChat
-}
