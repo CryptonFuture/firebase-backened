@@ -3,7 +3,7 @@ const upload = require('../middleware/upload')
 
 const router = express.Router();
 
-const { signup, login, forgotPassword, verifyToken, signin, signout } = require("../controllers/authController");
+const { signup, login, forgotPassword, verifyToken, signin, signout } = require("../../src/controllers/authController");
 
 const verify = require("../middleware/verifyToken");
 
