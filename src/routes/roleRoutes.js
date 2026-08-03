@@ -6,6 +6,6 @@ const roleController = require("../controllers/roleController");
 
 const verify = require("../middleware/verifyToken");
 
-router.get("/roles", verify, roleController.getRoles);
+router.get("/roles", roleController.getRoles);
 
 module.exports = router;
